@@ -1,6 +1,10 @@
 const express = require("express");
 const app = express();
 
+//pasword: OM78NHcASEKkB48e
+//user: wefqi99
+//connectionString: mongodb+srv://wefqi099:<password>@cluster0.ls59kvg.mongodb.net/?retryWrites=true&w=majority
+
 app.use(express.static(__dirname + '/client'))
 
 // Start MongoDB Atlas ********
