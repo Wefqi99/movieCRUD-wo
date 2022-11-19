@@ -7,7 +7,7 @@ const app = express();
 
 app.use(express.static(__dirname + '/client'))
 
-// Start MongoDB Atlas ********
+
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -21,7 +21,30 @@ const movieSchema = {
 }
 const Movie = mongoose.model("movie", movieSchema);
 
-// Create route called from create.html
+
+
+async function main() {
+
+	const mongooseUri = "mongodb+srv://wefqi099:OM78NHcASEKkB48e@cluster0.ls59kvg.mongodb.net/movieDatabase"
+
+	const client = new MongoClient(mongooseUri);
+
+	try {
+		await client.connect();
+	} catch (ex) {
+		console.log(ex)
+	} finally {
+		await client.close();
+	}
+
+	try {
+		deleteByName(client, "Thor")
+	} catch (ex) {
+		console.log(ex)
+	}
+}
+
+
 app.post("/create", function(req, res){
 	let newNote = new Movie({
 		title: req.body.title,
@@ -31,6 +54,41 @@ app.post("/create", function(req, res){
 	newNote.save();
 	res.redirect("/");
 })
+
+app.delete("/delete", async function (req) {
+	const mongooseUri = "mongodb+srv://wefqi099:OM78NHcASEKkB48e@cluster0.ls59kvg.mongodb.net/movieDatabase"
+
+	const client = new MongoClient(mongooseUri);
+
+	try {
+		await client.connect();
+	} catch (ex) {
+		console.log(ex)
+	} finally {
+		await client.close();
+	}
+	
+	await client.db("movieDatabase").collection("movies").deleteOne({title: req});
+
+})
+
+app.put("/update"), async function(req, res) {
+
+	const mongooseUri = "mongodb+srv://wefqi099:OM78NHcASEKkB48e@cluster0.ls59kvg.mongodb.net/movieDatabase"
+
+	const client = new MongoClient(mongooseUri);
+
+	try {
+		await client.connect();
+	} catch (ex) {
+		console.log(ex)
+	} finally {
+		await client.close();
+	}
+
+	Movie.findByIdAndUpdate()
+}
+
 
 const renderNotes = (notesArray) => {
 	let text = "Movies Collection:\n\n";
@@ -50,10 +108,6 @@ app.get("/read", function(request, response) {
 	})
 })
 
-// Todo: Implement your own MongoDB Atlas Organization, Project, Database Cluster, Database, and Collection.
-// Todo: Implement and test the Update and Delete functionCRUD.
-
-// End MongoDB Atlas ********
 
 const port = process.env.PORT || 3000
 app.get('/test', function(request, response) {
@@ -64,3 +118,11 @@ app.get('/test', function(request, response) {
 app.listen(port, function() {
 	console.log("Server is running at http://localhost:3000/")
 })
+
+async function deleteByName(client, nameOfMovie) {
+	const result = await client.db("movieDatabase").collection("movies").deleteOne({title: nameOfMovie});
+	console.log("deleted")
+}
+
+
+
